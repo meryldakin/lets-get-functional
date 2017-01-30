@@ -122,8 +122,39 @@ function customerConnections (collection){
   return howManyFriends;
 }
 
-
 //users have tags associated with them: find the top 3 most common tags
+
+function popularTags(array){
+  // create object to hold frequency of tags
+  let tagFrequency = {};
+  // create a flattened array to hold all tags with duplicates to count
+  let tagArr = ld.reduce(ld.pluck(array, "tags"), (prev, curr, seed) => prev.concat(curr));
+  // loop through tag array and set a counter to set value of tag Frequency object to the number of times tag appears
+  ld.each(tagArr, function(element, index, array){
+    let counter = array[index];
+    return tagFrequency[counter] = tagFrequency[counter] ? tagFrequency[counter] + 1 : 1;  
+  });
+  // at this point, our object shows each tag as key with number of occurances as value
+  // create array of tags with frequencies as first character in string
+  let tagFreqArr = ld.map(tagFrequency, function(element, index, collection){
+    return element +  index;
+  });
+  // sort tags by first character (frequency), lowest to highest
+  let sortedTags = tagFreqArr.sort(function (a, b){
+    if (a[0] > b[0]){
+      return 1;
+    }
+  });
+  // reverse array so highest is first
+  let reverseTags = sortedTags.reverse();
+  // map through and remove numbers from beginning of tags
+  let numbersRemoved = ld.map(reverseTags, function(element, key, collection){
+    return element.slice(1);
+  });
+  // return only the first three most popular tags (there is a tie for the first 5)
+  return numbersRemoved.slice(0,3);
+}
+
 //create a summary of genders
 function genderBreakdown(array){
   let genderObject = {};
